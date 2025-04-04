@@ -1,0 +1,316 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    scroll-behavior: smooth;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Enhanced Volunteer Section Styling */
+.volunteer-section {
+    position: relative;
+    padding: 70px 30px;
+    max-width: 900px;
+    margin: 60px auto;
+    background: linear-gradient(135deg, #fff8f0 0%, #ffffff 100%);
+    border-radius: 20px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    text-align: center;
+}
+
+.volunteer-section::before {
+    content: "";
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 150px;
+    height: 150px;
+    background: rgba(255, 128, 0, 0.08);
+    border-radius: 50%;
+    z-index: 0;
+}
+
+.volunteer-section::after {
+    content: "";
+    position: absolute;
+    bottom: -80px;
+    left: -80px;
+    width: 200px;
+    height: 200px;
+    background: rgba(255, 128, 0, 0.05);
+    border-radius: 50%;
+    z-index: 0;
+}
+
+.volunteer-container {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.volunteer-header {
+    margin-bottom: 30px;
+}
+
+.volunteer-header h3 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    color: #ff8000;
+    position: relative;
+    display: inline-block;
+}
+
+.volunteer-header h3::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #ff8000, #ffb366);
+    border-radius: 2px;
+}
+
+.volunteer-description {
+    font-size: 1.1rem;
+    color: #666;
+    line-height: 1.7;
+    margin-bottom: 35px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.volunteer-benefits {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-bottom: 35px;
+    flex-wrap: wrap;
+}
+
+.benefit-item {
+    display: flex;
+    align-items: center;
+    background: white;
+    padding: 12px 20px;
+    border-radius: 50px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+}
+
+.benefit-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(255, 128, 0, 0.15);
+}
+
+.benefit-item i {
+    color: #ff8000;
+    font-size: 1.2rem;
+    margin-right: 10px;
+}
+
+.benefit-item span {
+    font-weight: 500;
+    color: #555;
+}
+
+.whatsapp-join {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #25D366;
+    color: white;
+    text-decoration: none;
+    padding: 16px 30px;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 auto;
+    max-width: 300px;
+    box-shadow: 0 10px 25px rgba(37, 211, 102, 0.25);
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+.whatsapp-join::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #128C7E, #25D366);
+    z-index: -1;
+    transition: all 0.5s ease;
+}
+
+.whatsapp-join:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(37, 211, 102, 0.3);
+}
+
+.whatsapp-join:hover::before {
+    transform: scaleX(1.1) scaleY(1.2);
+    opacity: 0.8;
+}
+
+.whatsapp-join i {
+    font-size: 1.5rem;
+    margin-right: 12px;
+}
+
+.volunteer-alternative {
+    margin-top: 25px;
+    color: #777;
+    font-size: 0.95rem;
+}
+
+.volunteer-alternative a {
+    color: #ff8000;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.volunteer-alternative a:hover {
+    color: #e67300;
+    text-decoration: underline;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .volunteer-section {
+        padding: 50px 20px;
+        margin: 40px 20px;
+        border-radius: 15px;
+    }
+    
+    .volunteer-header h3 {
+        font-size: 1.8rem;
+    }
+    
+    .volunteer-description {
+        font-size: 1rem;
+        margin-bottom: 25px;
+    }
+    
+    .volunteer-benefits {
+        gap: 15px;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+    
+    .benefit-item {
+        width: 100%;
+        max-width: 250px;
+        padding: 10px 15px;
+    }
+    
+    .whatsapp-join {
+        padding: 14px 25px;
+        font-size: 1rem;
+        max-width: 250px;
+    }
+    
+    .volunteer-section::before {
+        width: 100px;
+        height: 100px;
+        top: -20px;
+        right: -20px;
+    }
+    
+    .volunteer-section::after {
+        width: 150px;
+        height: 150px;
+        bottom: -50px;
+        left: -50px;
+    }
+}
+
+@media (max-width: 480px) {
+    .volunteer-section {
+        padding: 40px 15px;
+        margin: 30px 15px;
+        border-radius: 12px;
+    }
+    
+    .volunteer-header h3 {
+        font-size: 1.6rem;
+        margin-bottom: 10px;
+    }
+    
+    .volunteer-header h3::after {
+        width: 50px;
+        height: 2px;
+        bottom: -8px;
+    }
+    
+    .volunteer-description {
+        font-size: 0.95rem;
+        margin-bottom: 20px;
+    }
+    
+    .benefit-item {
+        max-width: 220px;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+    
+    .benefit-item i {
+        font-size: 1rem;
+    }
+    
+    .whatsapp-join {
+        padding: 12px 20px;
+        font-size: 0.95rem;
+    }
+    
+    .volunteer-alternative {
+        font-size: 0.9rem;
+        margin-top: 20px;
+    }
+    
+    .volunteer-section::before,
+    .volunteer-section::after {
+        display: none; /* Remove decorative circles on very small screens */
+    }
+}
+
+/* Landscape orientation for mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    .volunteer-section {
+        padding: 30px 20px;
+        margin: 20px auto;
+    }
+    
+    .volunteer-header h3 {
+        font-size: 1.5rem;
+        margin-bottom: 8px;
+    }
+    
+    .volunteer-description {
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+    
+    .volunteer-benefits {
+        flex-direction: row;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+    
+    .benefit-item {
+        padding: 6px 10px;
+        font-size: 0.8rem;
+    }
+}

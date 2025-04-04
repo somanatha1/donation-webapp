@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback Form</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        /* Feedback Container */
+        .feedback-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .feedback-container::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 128, 0, 0.08);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        
+        .feedback-container::after {
+            content: "";
+            position: absolute;
+            bottom: -100px;
+            left: -100px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 128, 0, 0.05);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        
+        .feedback-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Header */
+        .feedback-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .feedback-header h1 {
+            font-size: clamp(2rem, 5vw, 2.5rem);
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ff8000;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .feedback-header h1::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #ff8000, #ffb366);
+            border-radius: 2px;
+        }
+        
+        .feedback-header p {
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+            color: #666;
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+        
+        /* Form Styles */
+        .feedback-form {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-group label {
+            font-size: 1rem;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ff8000;
+            box-shadow: 0 0 0 3px rgba(255, 128, 0, 0.1);
+        }
+        
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        /* Rating Styles - UPDATED */
+        .rating-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .rating-options {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+        
+        .rating-option {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .rating-option input[type="radio"] {
+            display: none;
+        }
+        
+        .rating-option label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 15px 5px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid #e9ecef;
+        }
+        
+        .rating-option label i {
+            font-size: 1.8rem;
+            color: #adb5bd;
+            transition: all 0.3s ease;
+        }
+        
+        .rating-option label span {
+            font-size: 0.9rem;
+            color: #495057;
+            transition: all 0.3s ease;
+        }
+        
+        .rating-option input[type="radio"]:checked + label {
+            background: #fff8f0;
+            border-color: #ff8000;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(255, 128, 0, 0.1);
+        }
+        
+        .rating-option input[type="radio"]:checked + label i,
+        .rating-option input[type="radio"]:checked + label span {
+            color: #ff8000;
+        }
+        
+        .rating-option label:hover {
+            background: #fff8f0;
+            border-color: #ffd8b6;
+        }
+        
+        .rating-option label:hover i {
+            color: #ffb366;
+        }
+        
+        /* Submit Button */
+        .submit-btn {
+            padding: 14px 25px;
+            background: #ff8000;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(255, 128, 0, 0.3);
+        }
+        
+        .submit-btn:hover {
+            background: #e67300;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 128, 0, 0.4);
+        }
+        
+        /* Error Messages */
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        /* Responsive Breakpoints */
+        @media (max-width: 768px) {
+            .feedback-container {
+                padding: 30px;
+            }
+            
+            .rating-options {
+                flex-wrap: wrap;
+            }
+            
+            .rating-option {
+                flex: 1 0 calc(50% - 10px);
+                margin-bottom: 10px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .feedback-container {
+                padding: 25px 20px;
+            }
+            
+            .feedback-container::before,
+            .feedback-container::after {
+                display: none;
+            }
+            
+            .rating-option {
+                flex: 1 0 100%;
+            }
+            
+            .form-group input,
+            .form-group textarea,
+            .form-group select {
+                padding: 10px 12px;
+            }
+            
+            .rating-options {
+                gap: 8px;
+            }
+            
+            .rating-option label {
+                padding: 12px 5px;
+                flex-direction: row;
+                justify-content: center;
+                gap: 10px;
+            }
+            
+            .rating-option label i {
+                font-size: 1.5rem;
+            }
+            
+            .rating-option label span {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="feedback-container">
+        <div class="feedback-content">
+            <div class="feedback-header">
+                <h1>Share Your Feedback</h1>
+                <p>We value your opinion! Please take a moment to let us know about your experience.</p>
+            </div>
+            
+            <form id="feedbackForm" class="feedback-form" action="FeedbackServlet" method="POST">
+                <div class="form-group">
+                    <label for="name">Your Name</label>
+                    <input type="text" id="name" name="name" autocomplete="name" placeholder="Enter your name" required>
+                    <div id="name-error" class="error-message"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" autocomplete="email" 
+                           pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" 
+                           placeholder="Enter your email" required>
+                    <div id="email-error" class="error-message"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <select id="subject" name="subject" required>
+                        <option value="" disabled selected>Select a subject</option>
+                        <option value="general">General Feedback</option>
+                        <option value="bug">Bug Report</option>
+                        <option value="suggestion">Feature Suggestion</option>
+                        <option value="other">Other</option>
+                    </select>
+                    <div id="subject-error" class="error-message"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>How would you rate your experience?</label>
+                    <div class="rating-container">
+                        <div class="rating-options">
+                            <div class="rating-option">
+                                <input type="radio" id="rating-1" name="rating" value="1" required>
+                                <label for="rating-1">
+                                    <i class="fas fa-frown"></i>
+                                    <span>Poor</span>
+                                </label>
+                            </div>
+                            <div class="rating-option">
+                                <input type="radio" id="rating-2" name="rating" value="2">
+                                <label for="rating-2">
+                                    <i class="fas fa-meh"></i>
+                                    <span>Fair</span>
+                                </label>
+                            </div>
+                            <div class="rating-option">
+                                <input type="radio" id="rating-3" name="rating" value="3">
+                                <label for="rating-3">
+                                    <i class="fas fa-smile"></i>
+                                    <span>Good</span>
+                                </label>
+                            </div>
+                            <div class="rating-option">
+                                <input type="radio" id="rating-4" name="rating" value="4">
+                                <label for="rating-4">
+                                    <i class="fas fa-laugh"></i>
+                                    <span>Very Good</span>
+                                </label>
+                            </div>
+                            <div class="rating-option">
+                                <input type="radio" id="rating-5" name="rating" value="5">
+                                <label for="rating-5">
+                                    <i class="fas fa-grin-stars"></i>
+                                    <span>Excellent</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="rating-error" class="error-message"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Your Feedback</label>
+                    <textarea id="message" name="message" placeholder="Tell us about your experience..." required></textarea>
+                    <div id="message-error" class="error-message"></div>
+                </div>
+                
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Submit Feedback</span>
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById('feedbackForm').addEventListener('submit', function(e) {
+            let isValid = true;
+            
+            // Validate name
+            const name = document.getElementById('name').value.trim();
+            if (name === '') {
+                showError('name-error', 'Please enter your name');
+                isValid = false;
+            } else {
+                hideError('name-error');
+            }
+            
+            // Validate email
+            const email = document.getElementById('email').value.trim();
+            const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
+            if (email === '') {
+                showError('email-error', 'Please enter your email');
+                isValid = false;
+            } else if (!emailPattern.test(email)) {
+                showError('email-error', 'Please enter a valid email address');
+                isValid = false;
+            } else {
+                hideError('email-error');
+            }
+            
+            // Validate subject
+            const subject = document.getElementById('subject').value;
+            if (!subject) {
+                showError('subject-error', 'Please select a subject');
+                isValid = false;
+            } else {
+                hideError('subject-error');
+            }
+            
+            // Validate rating
+            const rating = document.querySelector('input[name="rating"]:checked');
+            if (!rating) {
+                showError('rating-error', 'Please select a rating');
+                isValid = false;
+            } else {
+                hideError('rating-error');
+            }
+            
+            // Validate message
+            const message = document.getElementById('message').value.trim();
+            if (message === '') {
+                showError('message-error', 'Please enter your feedback');
+                isValid = false;
+            } else {
+                hideError('message-error');
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+            }
+        });
+        
+        function showError(id, message) {
+            const errorElement = document.getElementById(id);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+        
+        function hideError(id) {
+            const errorElement = document.getElementById(id);
+            errorElement.textContent = '';
+            errorElement.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

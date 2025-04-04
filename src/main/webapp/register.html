@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Jagannath Anugrah Trust</title>
+    <link rel="stylesheet" href="register.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="jagapng-modified.png">
+</head>
+<body>
+    <div class="register-container">
+        <!-- Left side - Image -->
+        <div class="register-image">
+            <div class="logo-container">
+                <img src="logo-png-removebg-preview.png" alt="Jagannath Anugrah Trust" class="trust-logo">
+                <div class="logo-tagline">Join Our Community!</div>
+            </div>
+        </div>
+        
+        <!-- Right side - Form -->
+        <div class="register-form-container">
+            <div class="register-header">
+                <h2>Create Your Account</h2>
+                <p>Enter your details to get started</p>
+            </div>
+            
+            <form id="registerForm" class="register-form" action="./Register" method="post">
+                <div class="form-group">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="fullname" name="fullname" placeholder=" " required>
+                    <label for="fullname">Full Name</label>
+                    <div id="nameError" class="error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" name="email" placeholder=" " required>
+                    <label for="email">Email</label>
+                    <div id="emailError" class="error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <i class="fas fa-phone"></i>
+                    <input type="tel" id="phone" name="phone" placeholder=" " required>
+                    <label for="phone">Phone Number</label>
+                    <div id="phoneError" class="error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" name="password" placeholder=" " required>
+                    <label for="password">Password</label>
+                    <button type="button" class="toggle-password" id="togglePassword">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <div id="passwordError" class="error"></div>
+                </div>
+                
+                <div class="form-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="confirm-password" name="confirm-password" placeholder=" " required>
+                    <label for="confirm-password">Confirm Password</label>
+                    <button type="button" class="toggle-password" id="toggleConfirmPassword">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                    <div id="confirmPasswordError" class="error"></div>
+                </div>
+                
+                <div id="error-msg" class="form-error"></div>
+                <div id="success-msg" class="form-success"></div>
+                
+                <button type="submit" class="register-button">Sign Up</button>
+            </form>
+            
+            <div class="register-footer">
+                Already have an account? <a href="login.html">Login</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+ // Update the JavaScript section in register.html
+
+// Password Toggle Functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Setup password toggle for the password field
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    
+    togglePassword.addEventListener('click', function() {
+        // Toggle the type attribute
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        
+        // Toggle the eye / eye-slash icon
+        this.querySelector('i').classList.toggle('fa-eye');
+        this.querySelector('i').classList.toggle('fa-eye-slash');
+    });
+    
+    // Setup password toggle for the confirm password field
+    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+    const confirmPasswordInput = document.getElementById('confirm-password');
+    
+    toggleConfirmPassword.addEventListener('click', function() {
+        // Toggle the type attribute
+        const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        confirmPasswordInput.setAttribute('type', type);
+        
+        // Toggle the eye / eye-slash icon
+        this.querySelector('i').classList.toggle('fa-eye');
+        this.querySelector('i').classList.toggle('fa-eye-slash');
+    });
+    
+    // Function to automatically hide error messages after a delay
+    function autoHideErrorMessage(elementId, delay = 5000) {
+        const element = document.getElementById(elementId);
+        if (element && element.style.display !== "none") {
+            setTimeout(() => {
+                element.style.display = "none";
+            }, delay);
+        }
+    }
+    
+    // Check for error parameter in URL and display it
+    const urlParams = new URLSearchParams(window.location.search);
+    const errorMsg = urlParams.get('error');
+    if (errorMsg) {
+        const errorElement = document.getElementById("error-msg");
+        errorElement.textContent = errorMsg;
+        errorElement.style.display = "block";
+        
+        // Clear the URL parameter without refreshing page
+        window.history.replaceState({}, document.title, window.location.pathname);
+        
+        // Auto-hide the error message after 5 seconds
+        autoHideErrorMessage("error-msg", 5000);
+        
+        // DON'T clear field-specific errors or form inputs
+        setTimeout(() => {
+            document.querySelectorAll(".error").forEach(el => {
+                if (!el.id || !el.id.includes("msg")) { // Don't clear main error messages
+                    el.textContent = "";
+                }
+            });
+            document.querySelectorAll(".form-group").forEach(el => {
+                el.classList.remove("error");
+            });
+        }, 5000);
+        
+        // IMPORTANT: Do NOT reset the form here
+    } else {
+        // Force hide error and success messages on initial page load
+        if (document.getElementById("error-msg")) {
+            document.getElementById("error-msg").style.display = "none";
+        }
+        
+        if (document.getElementById("success-msg")) {
+            document.getElementById("success-msg").style.display = "none";
+        }
+    }
+});
+
+// Form Validation
+document.getElementById("registerForm").addEventListener("submit", function(event) {
+    let isValid = true;
+    
+    // Reset all errors but don't clear form fields
+    document.querySelectorAll(".error").forEach(el => {
+        if (!el.id || !el.id.includes("msg")) { // Don't clear main error messages
+            el.textContent = "";
+        }
+    });
+    document.querySelectorAll(".form-group").forEach(el => {
+        el.classList.remove("error");
+    });
+    document.getElementById("error-msg").style.display = "none";
+
+    // Full Name Validation
+    let name = document.getElementById("fullname").value.trim();
+    let nameError = document.getElementById("nameError");
+    if (!/^[A-Za-z\s]+$/.test(name)) {
+        nameError.textContent = "Full name should contain only alphabets and spaces.";
+        document.getElementById("fullname").parentElement.classList.add("error");
+        isValid = false;
+    }
+
+    // Email Validation
+    let email = document.getElementById("email").value.trim();
+    let emailError = document.getElementById("emailError");
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+        emailError.textContent = "Enter a valid email address.";
+        document.getElementById("email").parentElement.classList.add("error");
+        isValid = false;
+    }
+
+    // Phone Number Validation
+    let phone = document.getElementById("phone").value.trim();
+    let phoneError = document.getElementById("phoneError");
+    if (!/^\d{10}$/.test(phone)) {
+        phoneError.textContent = "Enter a valid 10-digit phone number.";
+        document.getElementById("phone").parentElement.classList.add("error");
+        isValid = false;
+    }
+
+    // Password Validation
+    let password = document.getElementById("password").value;
+    let passwordError = document.getElementById("passwordError");
+    if (password.length < 8) {
+        passwordError.textContent = "Password must be at least 8 characters long.";
+        document.getElementById("password").parentElement.classList.add("error");
+        isValid = false;
+    }
+
+    // Confirm Password Validation
+    let confirmPassword = document.getElementById("confirm-password").value;
+    let confirmPasswordError = document.getElementById("confirmPasswordError");
+    if (confirmPassword !== password) {
+        confirmPasswordError.textContent = "Passwords do not match.";
+        document.getElementById("confirm-password").parentElement.classList.add("error");
+        isValid = false;
+    }
+
+    // Auto-hide field validation errors after 5 seconds
+    if (!isValid) {
+        setTimeout(() => {
+            document.querySelectorAll(".error").forEach(el => {
+                if (!el.id || !el.id.includes("msg")) { // Don't clear main error messages
+                    el.textContent = "";
+                }
+            });
+            document.querySelectorAll(".form-group").forEach(el => {
+                el.classList.remove("error");
+            });
+        }, 5000);
+        
+        event.preventDefault(); // Stops form submission if there are errors
+    }
+});
+
+// Clear error messages when typing but not the input values
+document.querySelectorAll(".form-group input").forEach(input => {
+    input.addEventListener("input", function() {
+        const errorElement = this.parentElement.querySelector(".error");
+        if (errorElement) {
+            errorElement.textContent = "";
+        }
+        this.parentElement.classList.remove("error");
+        document.getElementById("error-msg").style.display = "none";
+    });
+});
+
+// REMOVE this window.onload function that was resetting the form
+// window.onload = function() {
+//     document.getElementById("registerForm").reset();
+// };
+    </script>
+</body>
+</html>
+
+

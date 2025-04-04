@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page Under Development</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        /* Development Container */
+        .dev-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            padding: 40px 30px;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .dev-container::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(255, 128, 0, 0.08);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        
+        .dev-container::after {
+            content: "";
+            position: absolute;
+            bottom: -100px;
+            left: -100px;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 128, 0, 0.05);
+            border-radius: 50%;
+            z-index: 0;
+        }
+        
+        .dev-content {
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Header */
+        .dev-header {
+            margin-bottom: 30px;
+        }
+        
+        .dev-header h1 {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ff8000;
+            position: relative;
+            display: inline-block;
+        }
+        
+        .dev-header h1::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(90deg, #ff8000, #ffb366);
+            border-radius: 2px;
+        }
+        
+        .dev-header p {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            color: #666;
+            font-weight: 300;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+        
+        /* Icon */
+        .dev-icon {
+            font-size: clamp(3rem, 10vw, 5rem);
+            color: #ff8000;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Progress */
+        .progress-container {
+            width: 100%;
+            background-color: #e9ecef;
+            border-radius: 50px;
+            margin: 25px 0;
+            height: 15px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff8000, #ffb366);
+            border-radius: 50px;
+            width: 65%;
+            animation: progress 2s ease-in-out infinite;
+        }
+        
+        @keyframes progress {
+            0% { width: 65%; }
+            50% { width: 70%; }
+            100% { width: 65%; }
+        }
+        
+        /* Countdown */
+        .countdown {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 30px 0;
+        }
+        
+        .countdown-item {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            min-width: 70px;
+            flex: 1 0 auto;
+            max-width: 100px;
+        }
+        
+        .countdown-number {
+            font-size: clamp(1.5rem, 4vw, 2rem);
+            font-weight: 700;
+            color: #ff8000;
+        }
+        
+        .countdown-label {
+            font-size: clamp(0.7rem, 2vw, 0.8rem);
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        /* Contact */
+        .dev-contact {
+            margin-top: 30px;
+        }
+        
+        .dev-contact p {
+            margin-bottom: 15px;
+            color: #666;
+            font-size: clamp(0.9rem, 2.5vw, 1rem);
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-link {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #ff8000;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        
+        .social-link:hover {
+            background: #e67300;
+            transform: translateY(-3px);
+        }
+        
+        /* Responsive Breakpoints */
+        @media (max-width: 600px) {
+            .dev-container {
+                padding: 30px 20px;
+            }
+            
+            .dev-container::before,
+            .dev-container::after {
+                display: none;
+            }
+            
+            .countdown-item {
+                min-width: 60px;
+                padding: 10px 12px;
+            }
+            
+            .social-link {
+                width: 36px;
+                height: 36px;
+                font-size: 0.9rem;
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .dev-container {
+                padding: 25px 15px;
+            }
+            
+            .countdown {
+                gap: 10px;
+            }
+            
+            .countdown-item {
+                min-width: 55px;
+                padding: 8px 10px;
+            }
+            
+            .countdown-number {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dev-container">
+        <div class="dev-content">
+            <div class="dev-header">
+                <div class="dev-icon">
+                    <i class="fas fa-tools"></i>
+                </div>
+                <h1>Under Development</h1>
+                <p>We're working hard to bring you an amazing experience. This page will be available soon!</p>
+            </div>
+            
+            <div class="progress-container">
+                <div class="progress-bar"></div>
+            </div>
+            
+            <div class="countdown">
+                <div class="countdown-item">
+                    <div class="countdown-number" id="days">07</div>
+                    <div class="countdown-label">Days</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="hours">12</div>
+                    <div class="countdown-label">Hours</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="minutes">45</div>
+                    <div class="countdown-label">Minutes</div>
+                </div>
+                <div class="countdown-item">
+                    <div class="countdown-number" id="seconds">30</div>
+                    <div class="countdown-label">Seconds</div>
+                </div>
+            </div>
+            
+            <div class="dev-contact">
+                <p>In the meantime, feel free to contact us:</p>
+                <div class="social-links">
+                    <a href="#" class="social-link"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+                    <a href="mailto:contact@example.com" class="social-link"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple countdown timer (for demo purposes)
+        function updateCountdown() {
+            const days = document.getElementById('days');
+            const hours = document.getElementById('hours');
+            const minutes = document.getElementById('minutes');
+            const seconds = document.getElementById('seconds');
+            
+            let dayVal = parseInt(days.textContent);
+            let hourVal = parseInt(hours.textContent);
+            let minuteVal = parseInt(minutes.textContent);
+            let secondVal = parseInt(seconds.textContent);
+            
+            secondVal--;
+            
+            if (secondVal < 0) {
+                secondVal = 59;
+                minuteVal--;
+                
+                if (minuteVal < 0) {
+                    minuteVal = 59;
+                    hourVal--;
+                    
+                    if (hourVal < 0) {
+                        hourVal = 23;
+                        dayVal--;
+                    }
+                }
+            }
+            
+            days.textContent = dayVal.toString().padStart(2, '0');
+            hours.textContent = hourVal.toString().padStart(2, '0');
+            minutes.textContent = minuteVal.toString().padStart(2, '0');
+            seconds.textContent = secondVal.toString().padStart(2, '0');
+        }
+        
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Forgot Password - Jagannath Anugrah Trust</title>
+<link rel="stylesheet" href="forgetpassword.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="icon" href="jagapng-modified.png">
+</head>
+<body>
+<div class="login-container">
+  <div class="login-box">
+    <div class="login-header">
+      <h2>Forgot Password</h2>
+      <p>We'll help you reset your password</p>
+    </div>
+
+    <!-- Step 1: Email Entry -->
+    <form id="email-form" action="./SendOTPServlet" method="post" onsubmit="return requestOTP(event)">
+      <div class="input-group">
+        <label for="email"><i class="fas fa-envelope"></i> Email:</label>
+        <input type="email" id="email" name="email" placeholder="Enter your registered email" autocomplete="username" required>
+        <small id="email-error" style="color: red;"></small>
+      </div>
+      <button type="submit" class="login-button" id="send-otp-button">Send OTP</button>
+    </form>
+
+    <div class="login-footer">
+      <p>Remember your password? <a href="login.html">Back to Login</a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+// Anti-CSRF token
+let csrfToken = '';
+
+// Generate CSRF token
+function generateCSRFToken() {
+    const randomBytes = new Uint8Array(32);
+    window.crypto.getRandomValues(randomBytes);
+    csrfToken = Array.from(randomBytes, byte => byte.toString(16).padStart(2, '0')).join('');
+    localStorage.setItem('csrf_token', csrfToken);
+    return csrfToken;
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', function() {
+    // Generate CSRF token
+    generateCSRFToken();
+    
+    // Rate limiting for buttons to prevent brute force
+    setupRateLimiting('send-otp-button', 3000);
+});
+
+// Setup rate limiting for buttons
+function setupRateLimiting(buttonId, delay) {
+    const button = document.getElementById(buttonId);
+    if (button) {
+        button.addEventListener('click', function() {
+            if (this.getAttribute('data-disabled') === 'true') {
+                return false;
+            }
+            this.setAttribute('data-disabled', 'true');
+            this.style.opacity = '0.6';
+            this.style.cursor = 'not-allowed';
+            
+            setTimeout(() => {
+                this.removeAttribute('data-disabled');
+                this.style.opacity = '1';
+                this.style.cursor = 'pointer';
+            }, delay);
+        });
+    }
+}
+
+// Email validation function
+function validateEmail(email) {
+    // Strict email regex pattern
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailRegex.test(email)) {
+        return false;
+    }
+    
+    // Additional validation for common domains and patterns
+    const parts = email.split('@');
+    const domain = parts[1].toLowerCase();
+    
+    // Check for temporary email domains (partial list)
+    const tempDomains = ['tempmail.com', 'temp-mail.org', 'throwawaymail.com', 'mailinator.com'];
+    if (tempDomains.some(d => domain.includes(d))) {
+        return false;
+    }
+    
+    return true;
+}
+
+// Function to handle the OTP request
+function requestOTP(event) {
+    event.preventDefault();
+    const email = document.getElementById('email').value.trim();
+    const emailError = document.getElementById('email-error');
+    
+    // Clear previous errors
+    emailError.textContent = "";
+    
+    // Email validation
+    if (!validateEmail(email)) {
+        emailError.textContent = "Please enter a valid email address!";
+        return false;
+    }
+    
+    // CSRF protection
+    const token = localStorage.getItem('csrf_token') || generateCSRFToken();
+    
+    // Show loading state
+    const button = document.getElementById('send-otp-button');
+    const originalText = button.textContent;
+    button.textContent = "Sending...";
+    button.disabled = true;
+    
+    // In a real implementation, this would be an AJAX call to the server
+    fetch('././SendOTPServlet', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRF-Token': token
+        },
+        body: 'email=' + encodeURIComponent(email)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Save email in localStorage to be accessed by OTP verification page
+            localStorage.setItem('resetEmail', email);
+            
+            // Set session identifier
+            if (data.sessionId) {
+                sessionStorage.setItem('otpSessionId', data.sessionId);
+            }
+            
+            // Redirect to OTP verification page
+            window.location.href = 'otpverification.html';
+        } else {
+            emailError.textContent = data.message || "Email not found. Please check and try again.";
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        emailError.textContent = "Something went wrong. Please try again later.";
+    })
+    .finally(() => {
+        // Reset button state
+        button.textContent = originalText;
+        button.disabled = false;
+    });
+    
+    // For demo purposes
+    localStorage.setItem('resetEmail', email);
+    window.location.href = 'otpverification.html';
+    
+    return false;
+}
+</script>
+</body>
+</html>

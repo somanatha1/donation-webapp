@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="login.css">
+</head>
+<body>
+    <div class="login-container">
+        <!-- Left side - Image -->
+        <div class="login-image">
+            <div class="logo-container">
+                <img src="logo-png-removebg-preview.png" alt="Jagannath Anugrah Trust" class="trust-logo">
+                <div class="logo-tagline">Welcome Back!</div>
+            </div>
+        </div>
+        
+        <!-- Right side - Form -->
+        <div class="login-form-container">
+            <div class="login-header">
+                <h2>Login to Your Account</h2>
+                <p>Enter your credentials to access your account</p>
+            </div>
+            
+            <form class="login-form" action="./LoginServlet" method="post">
+                <div class="form-group">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="email" name="email" placeholder=" " required>
+                    <label for="email">Email</label>
+                    <div id="email-error" class="error-text"></div>
+                </div>
+                
+                <div class="form-group password-group">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="password" name="password" placeholder=" " required>
+                    <label for="password">Password</label>
+                    <button type="button" id="togglePassword" class="fas fa-eye"></button>
+                    <div id="password-error" class="error-text"></div>
+                </div>
+                
+                <div class="remember-forgot">
+                    <label class="remember-me">
+                        <input type="checkbox">
+                        Remember me
+                    </label>
+                    <a href="emailverification.html" class="forgot-password">Forgot Password?</a>
+                </div>
+                
+                <div id="error-msg" class="form-error"></div>
+                <div id="success-msg" class="form-success"></div>
+                
+                <button type="submit" class="login-button">Login</button>
+            </form>
+            
+            <div class="other-logins">
+                <p>Or Login With</p>
+                <div class="social-logins">
+                    <a href="#" class="social-button google">
+                        <i class="fab fa-google"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="signup-link">
+                Don't have an account? <a href="register.html">Sign Up</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    // Ensure all message elements are hidden on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add form submission handler
+        document.querySelector(".login-form").addEventListener("submit", function(e) {
+            if (!validateLogin()) {
+                e.preventDefault();
+            }
+        });
+        
+        // Force hide error and success messages on initial page load
+        if (document.getElementById("error-msg")) {
+            document.getElementById("error-msg").style.display = "none";
+        }
+        
+        if (document.getElementById("success-msg")) {
+            document.getElementById("success-msg").style.display = "none";
+        }
+        
+        // Clear any input validation errors
+        if (document.getElementById("email-error")) {
+            document.getElementById("email-error").textContent = "";
+        }
+        
+        if (document.getElementById("password-error")) {
+            document.getElementById("password-error").textContent = "";
+        }
+        
+        // Check URL parameters after ensuring messages are hidden
+        setTimeout(checkUrlParameters, 100);
+        
+        // Make sure the password toggle is set up
+        setupPasswordToggle();
+    });
+
+    // Function to set up password toggle
+    function setupPasswordToggle() {
+        const toggleBtn = document.getElementById("togglePassword");
+        const passwordInput = document.getElementById("password");
+        
+        if (toggleBtn && passwordInput) {
+            toggleBtn.addEventListener("click", function() {
+                if (passwordInput.type === "password") {
+                    passwordInput.type = "text";
+                    toggleBtn.classList.remove("fa-eye");
+                    toggleBtn.classList.add("fa-eye-slash");
+                } else {
+                    passwordInput.type = "password";
+                    toggleBtn.classList.remove("fa-eye-slash");
+                    toggleBtn.classList.add("fa-eye");
+                }
+            });
+        }
+    }
+
+    // Function to check URL parameters
+    function checkUrlParameters() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const error = urlParams.get('error');
+        const success = urlParams.get('success');
+        
+        const errorMsg = document.getElementById("error-msg");
+        const successMsg = document.getElementById("success-msg");
+        
+        // Only show error messages if URL parameter exists and has a valid value
+        if (error && ['invalid', 'database', 'inactive'].includes(error)) {
+            if (error === "invalid") {
+                errorMsg.innerText = "Invalid email or password!";
+                errorMsg.style.display = "block";
+            } else if (error === "database") {
+                errorMsg.innerText = "Database error! Please try again later.";
+                errorMsg.style.display = "block";
+            } else if (error === "inactive") {
+                errorMsg.innerText = "Your account is inactive. Please contact support.";
+                errorMsg.style.display = "block";
+            }
+        }
+        
+        // Only show success messages if URL parameter exists and has a valid value
+        if (success && ['passwordreset', 'registered'].includes(success)) {
+            if (success === "passwordreset") {
+                successMsg.innerText = "Password has been reset successfully. Please login with your new password.";
+                successMsg.style.display = "block";
+            } else if (success === "registered") {
+                successMsg.innerText = "Registration successful! Please login to continue.";
+                successMsg.style.display = "block";
+            }
+        }
+    }
+
+    function validateLogin() {
+        let email = document.getElementById("email").value;
+        let password = document.getElementById("password").value;
+        let emailField = document.getElementById("email");
+        let passwordField = document.getElementById("password");
+        let emailError = document.getElementById("email-error");
+        let passwordError = document.getElementById("password-error");
+        let errorMsg = document.getElementById("error-msg");
+        let isValid = true;
+        
+        // Reset error messages and classes
+        emailError.textContent = "";
+        passwordError.textContent = "";
+        errorMsg.style.display = "none";
+        emailField.parentElement.classList.remove("error");
+        passwordField.parentElement.classList.remove("error");
+        
+        // Email validation
+        let emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+        if (!emailRegex.test(email)) {
+            emailError.textContent = "Enter a valid email address!";
+            emailField.parentElement.classList.add("error");
+            isValid = false;
+        }
+        
+        // Password validation
+        if (password.length < 6) {
+            passwordError.textContent = "Password must be at least 6 characters long!";
+            passwordField.parentElement.classList.add("error");
+            isValid = false;
+        }
+        
+        return isValid;
+    }
+
+    // Clear error messages when typing
+    document.getElementById("email").addEventListener("input", function() {
+        document.getElementById("error-msg").style.display = "none";
+        document.getElementById("email-error").textContent = "";
+        this.parentElement.classList.remove("error");
+    });
+
+    document.getElementById("password").addEventListener("input", function() {
+        document.getElementById("error-msg").style.display = "none";
+        document.getElementById("password-error").textContent = "";
+        this.parentElement.classList.remove("error");
+    });
+
+    // Reset form on page refresh/load to clear any persisted values
+    window.onload = function() {
+        document.querySelector(".login-form").reset();
+    };
+    </script>
+</body>
+</html>
+
+

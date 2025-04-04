@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reset Password - Jagannath Anugrah Trust</title>
+<link rel="stylesheet" href="forgetpassword.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="icon" href="jagapng-modified.png">
+</head>
+<body>
+<div class="login-container">
+  <div class="login-box">
+    <div class="login-header">
+      <h2>Reset Password</h2>
+      <p>Create a strong new password</p>
+    </div>
+
+    <!-- New Password Form -->
+    <form id="new-password-form" action="./ResetPasswordServlet" method="post" onsubmit="return resetPassword(event)">
+      <div class="input-group">
+        <label for="new-password"><i class="fas fa-lock"></i> New Password:</label>
+        <input type="password" id="new-password" name="new-password" placeholder="Enter new password" autocomplete="new-password" required>
+        <span class="password-toggle" onclick="togglePasswordVisibility('new-password', 'new-password-toggle')">
+            <i class="fas fa-eye" id="new-password-toggle"></i>
+        </span>
+        <small id="new-password-error" style="color: red;"></small>
+        <div class="password-strength-meter">
+            <div id="password-strength-bar"></div>
+        </div>
+        <div class="password-requirements">
+            <div class="requirement" id="req-length"><i class="fas fa-times-circle"></i> At least 8 characters</div>
+            <div class="requirement" id="req-uppercase"><i class="fas fa-times-circle"></i> At least one uppercase letter</div>
+            <div class="requirement" id="req-lowercase"><i class="fas fa-times-circle"></i> At least one lowercase letter</div>
+            <div class="requirement" id="req-number"><i class="fas fa-times-circle"></i> At least one number</div>
+            <div class="requirement" id="req-special"><i class="fas fa-times-circle"></i> At least one special character</div>
+        </div>
+      </div>
+      <div class="input-group">
+        <label for="confirm-password"><i class="fas fa-lock"></i> Confirm Password:</label>
+        <input type="password" id="confirm-password" name="confirm-password" placeholder="Confirm new password" autocomplete="new-password" required>
+        <span class="password-toggle" onclick="togglePasswordVisibility('confirm-password', 'confirm-password-toggle')">
+            <i class="fas fa-eye" id="confirm-password-toggle"></i>
+        </span>
+        <small id="confirm-password-error" style="color: red;"></small>
+      </div>
+      <input type="hidden" id="otp-hidden" name="otp">
+      <input type="hidden" id="email-reset" name="email">
+      <button type="submit" class="login-button" id="reset-password-button">Reset Password</button>
+    </form>
+
+    <div class="login-footer">
+      <p><a href="otpverification.html">Back to OTP Verification</a></p>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get email and OTP from localStorage
+    const email = localStorage.getItem('resetEmail');
+    const otp = localStorage.getItem('verifiedOTP');
+    
+    if (!email || !otp) {
+        // Redirect back if email or OTP is missing
+        window.location.href = 'emailverification.html';
+        return;
+    }
+    
+    // Set values in hidden fields
+    document.getElementById('email-reset').value = email;
+    document.getElementById('otp-hidden').value = otp;
+    
+    // Set up password validation
+    const newPasswordInput = document.getElementById('new-password');
+    if (newPasswordInput) {
+        newPasswordInput.addEventListener('input', function() {
+            validatePasswordRequirements();
+            checkPasswordStrength();
+        });
+    }
+    
+    // Set up confirm password validation
+    const confirmPasswordInput = document.getElementById('confirm-password');
+    if (confirmPasswordInput) {
+        confirmPasswordInput.addEventListener('input', function() {
+            validatePasswordMatch();
+        });
+    }
+    
+    // Rate limiting for buttons
+    setupRateLimiting('reset-password-button', 2000);
+    
+    // Focus on new password input
+    newPasswordInput.focus();
+});
+
+// Setup rate limiting for buttons
+function setupRateLimiting(buttonId, delay) {
+    const button = document.getElementById(buttonId);
+    if (button) {
+        button.addEventListener('click', function() {
+            if (this.getAttribute('data-disabled') === 'true') {
+                return false;
+            }
+            this.setAttribute('data-disabled', 'true');
+            this.style.opacity = '0.6';
+            this.style.cursor = 'not-allowed';
+            
+            setTimeout(() => {
+                this.removeAttribute('data-disabled');
+                this.style.opacity = '1';
+                this.style.cursor = 'pointer';
+            }, delay);
+        });
+    }
+}
+
+// Toggle password visibility
+function togglePasswordVisibility(inputId, toggleId) {
+    const passwordInput = document.getElementById(inputId);
+    const toggleIcon = document.getElementById(toggleId);
+    
+    if (passwordInput.type === 'password') {
+        passwordInput.type = 'text';
+        toggleIcon.classList.remove('fa-eye');
+        toggleIcon.classList.add('fa-eye-slash');
+    } else {
+        passwordInput.type = 'password';
+        toggleIcon.classList.remove('fa-eye-slash');
+        toggleIcon.classList.add('fa-eye');
+    }
+}
+
+// Validate password requirements
+function validatePasswordRequirements() {
+    const password = document.getElementById('new-password').value;
+    
+    // Test each requirement
+    const requirements = {
+        'req-length': password.length >= 8,
+        'req-uppercase': /[A-Z]/.test(password),
+        'req-lowercase': /[a-z]/.test(password),
+        'req-number': /[0-9]/.test(password),
+        'req-special': /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)
+    };
+    
+    // Update UI for each requirement
+    for (const [id, isValid] of Object.entries(requirements)) {
+        const element = document.getElementById(id);
+        const icon = element.querySelector('i');
+        
+        if (isValid) {
+            element.classList.remove('invalid');
+            element.classList.add('valid');
+            icon.classList.remove('fa-times-circle');
+            icon.classList.add('fa-check-circle');
+        } else {
+            element.classList.remove('valid');
+            element.classList.add('invalid');
+            icon.classList.remove('fa-check-circle');
+            icon.classList.add('fa-times-circle');
+        }
+    }
+    
+    return Object.values(requirements).every(Boolean);
+}
+
+// Check password strength
+function checkPasswordStrength() {
+    const password = document.getElementById('new-password').value;
+    const strengthBar = document.getElementById('password-strength-bar');
+    
+    // Calculate password strength
+    let strength = 0;
+    
+    // Length contribution
+    if (password.length >= 8) strength += 1;
+    if (password.length >= 12) strength += 1;
+    
+    // Character type contribution
+    if (/[A-Z]/.test(password)) strength += 1;
+    if (/[a-z]/.test(password)) strength += 1;
+    if (/[0-9]/.test(password)) strength += 1;
+    if (/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) strength += 1;
+    
+    // Common patterns reduction
+    if (/123|abc|qwerty|password/i.test(password)) strength -= 1;
+    
+    // Repetitive characters reduction
+    if (/(.)\1\1/.test(password)) strength -= 1;
+    
+    // Ensure strength is at least 0
+    strength = Math.max(0, strength);
+    
+    // Set strength class
+    strengthBar.className = '';
+    
+    if (password.length === 0) {
+        strengthBar.style.width = '0';
+    } else if (strength <= 1) {
+        strengthBar.classList.add('strength-very-weak');
+        strengthBar.style.width = '20%';
+    } else if (strength === 2) {
+        strengthBar.classList.add('strength-weak');
+        strengthBar.style.width = '40%';
+    } else if (strength === 3) {
+        strengthBar.classList.add('strength-medium');
+        strengthBar.style.width = '60%';
+    } else if (strength === 4) {
+        strengthBar.classList.add('strength-strong');
+        strengthBar.style.width = '80%';
+    } else {
+        strengthBar.classList.add('strength-very-strong');
+        strengthBar.style.width = '100%';
+    }
+}
+
+// Validate password match
+function validatePasswordMatch() {
+    const password = document.getElementById('new-password').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
+    const confirmPasswordError = document.getElementById('confirm-password-error');
+    
+    if (confirmPassword && password !== confirmPassword) {
+        confirmPasswordError.textContent = "Passwords do not match!";
+        return false;
+    } else {
+        confirmPasswordError.textContent = "";
+        return true;
+    }
+}
+
+// Function to handle password reset
+function resetPassword(event) {
+    event.preventDefault();
+    const newPassword = document.getElementById('new-password').value;
+    const confirmPassword = document.getElementById('confirm-password').value;
+    const newPasswordError = document.getElementById('new-password-error');
+    const confirmPasswordError = document.getElementById('confirm-password-error');
+    const otp = document.getElementById('otp-hidden').value;
+    const email = document.getElementById('email-reset').value;
+    
+    // Clear previous errors
+    newPasswordError.textContent = "";
+    confirmPasswordError.textContent = "";
+    
+    // Validate password requirements
+    if (!validatePasswordRequirements()) {
+        newPasswordError.textContent = "Password does not meet all requirements!";
+        return false;
+    }
+    
+    // Validate password match
+    if (!validatePasswordMatch()) {
+        return false;
+    }
+    
+    // CSRF protection
+    const token = localStorage.getItem('csrf_token') || '';
+    
+    // Get session identifier
+    const sessionId = sessionStorage.getItem('otpSessionId') || '';
+    
+    // Show loading state
+    const button = document.getElementById('reset-password-button');
+    const originalText = button.textContent;
+    button.textContent = "Resetting...";
+    button.disabled = true;
+    
+    // In a real implementation, this would be an AJAX call to the server
+    fetch('./ResetPasswordServlet', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-CSRF-Token': token,
+            'Accept': 'application/json' // Explicitly request JSON response
+        },
+        body: 'email=' + encodeURIComponent(email) + 
+              '&otp=' + encodeURIComponent(otp) + 
+              '&password=' + encodeURIComponent(newPassword) +
+              '&sessionId=' + encodeURIComponent(sessionId)
+    })
+    .then(response => {
+        // First check if the response is ok
+        if (!response.ok) {
+            throw new Error('Server returned status: ' + response.status);
+        }
+        
+        // Try to parse as text first
+        return response.text().then(text => {
+            try {
+                // Try to parse the text as JSON
+                return JSON.parse(text);
+            } catch (err) {
+                // If it's not valid JSON, throw an error with the text
+                throw new Error('Invalid JSON response: ' + text);
+            }
+        });
+    })
+    .then(data => {
+        if (data.success) {
+            // Clear sensitive data from storage
+            localStorage.removeItem('resetEmail');
+            localStorage.removeItem('verifiedOTP');
+            sessionStorage.removeItem('otpSessionId');
+            
+            // Clear the form fields
+            document.getElementById('new-password').value = '';
+            document.getElementById('confirm-password').value = '';
+            
+            // Redirect to success page
+            window.location.href = 'pwresetsucessfully.jsp';
+        } else {
+            // Display error message
+            newPasswordError.textContent = data.message || "Failed to reset password. Please try again.";
+            
+            // Reset button state
+            button.textContent = originalText;
+            button.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        // Display error to the user
+        newPasswordError.textContent = "A network error occurred. Please try again later.";
+        
+        // Reset button state
+        button.textContent = originalText;
+        button.disabled = false;
+    })
+    .finally(() => {
+        // Make sure button is re-enabled in any case after a delay
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.disabled = false;
+        }, 3000);
+    });
+    
+    return false; // Prevent form submission
+}
+
+// Add security measurement to prevent password from being copied
+document.addEventListener('DOMContentLoaded', function() {
+    const passwordInputs = document.querySelectorAll('input[type="password"]');
+    passwordInputs.forEach(input => {
+        input.addEventListener('copy', function(e) {
+            e.preventDefault();
+            alert('Copying passwords is disabled for security reasons.');
+        });
+        input.addEventListener('cut', function(e) {
+            e.preventDefault();
+            alert('Cutting passwords is disabled for security reasons.');
+        });
+    });
+});
+</script>
+</body>
+</html>
