@@ -1,34 +1,36 @@
 FROM tomcat:11.0-jdk21
 
-# 1. Install only essential packages
+# Install PostgreSQL client
 RUN apt-get update && \
     apt-get install -y postgresql-client && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+    apt-get clean
 
-# 2. Copy files from root (no build/ directory assumption)
+# Copy application files
 COPY Donationwebapp.war /usr/local/tomcat/webapps/ROOT.war
 COPY src/main/resources/schema.sql /schema.sql
 
-# 3. Simplified startup script
+# Startup script with proper JDBC URL parsing
 RUN echo '#!/bin/sh\n\
 set -e\n\
 \n\
-# Extract DB connection details\n\
-DB_HOST=$(echo "$JDBC_DATABASE_URL" | cut -d@ -f2 | cut -d: -f1)\n\
-DB_NAME=$(echo "$JDBC_DATABASE_URL" | cut -d/ -f4 | cut -d? -f1)\n\
+# Extract hostname from JDBC URL (remove jdbc:postgresql:// prefix)\n\
+DB_HOST_PORT="${JDBC_DATABASE_URL#*://}"\n\
+DB_HOST="${DB_HOST_PORT%%/*}"\n\
+DB_HOST="${DB_HOST%%:*}"\n\
+DB_PORT="${DB_HOST_PORT#*:}"\n\
+DB_PORT="${DB_PORT%%/*}"\n\
+DB_NAME="${DB_HOST_PORT#*/}"\n\
+DB_NAME="${DB_NAME%%\?*}"\n\
 \n\
-# Wait for PostgreSQL\n\
-echo "Waiting for PostgreSQL..."\n\
-while ! PGPASSWORD="$JDBC_DATABASE_PASSWORD" psql -h "$DB_HOST" -U "$JDBC_DATABASE_USERNAME" -d "$DB_NAME" -c "SELECT 1"; do\n\
+echo "Waiting for PostgreSQL at ${DB_HOST}:${DB_PORT:-5432}..."\n\
+until PGPASSWORD="${JDBC_DATABASE_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT:-5432}" -U "${JDBC_DATABASE_USERNAME}" -d "${DB_NAME}" -c "SELECT 1" >/dev/null 2>&1; do\n\
   sleep 2\ndone\n\
 \n\
 # Initialize schema\n\
-PGPASSWORD="$JDBC_DATABASE_PASSWORD" psql -h "$DB_HOST" -U "$JDBC_DATABASE_USERNAME" -d "$DB_NAME" -f /schema.sql\n\
+PGPASSWORD="${JDBC_DATABASE_PASSWORD}" psql -h "${DB_HOST}" -p "${DB_PORT:-5432}" -U "${JDBC_DATABASE_USERNAME}" -d "${DB_NAME}" -f /schema.sql\n\
 \nexec catalina.sh run' > /startup.sh && \
     chmod +x /startup.sh
 
-# 4. Render-required settings
 EXPOSE 8080
 ENV PORT=8080
 CMD ["/startup.sh"]
