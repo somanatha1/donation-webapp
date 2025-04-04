@@ -5,9 +5,13 @@ RUN apt-get update && \
     apt-get install -y postgresql-client curl && \
     apt-get clean
 
-# Copy files with correct paths
+# First copy only the POM file to cache dependencies
+COPY pom.xml .
+# Optional: You can add a step to build your WAR file here if using multi-stage build
+
+# Then copy the actual application files
 COPY --chown=tomcat:tomcat src/main/resources/schema.sql /usr/local/tomcat/schema.sql
-COPY --chown=tomcat:tomcat target/Donationwebapp.war /usr/local/tomcat/webapps/ROOT.war
+COPY --chown=tomcat:tomcat Donationwebapp.war /usr/local/tomcat/webapps/ROOT.war
 
 # Startup script
 RUN echo '#!/bin/bash\n\
@@ -38,7 +42,7 @@ fi\n\
 \nexec catalina.sh run' > /usr/local/bin/startup.sh && \
     chmod +x /usr/local/bin/startup.sh
 
-# Port configuration (critical for Render)
+# Port configuration
 EXPOSE 8080
 ENV PORT=8080
 CMD ["/usr/local/bin/startup.sh"]
