@@ -26,7 +26,7 @@ ADD --chown=tomcat_user:tomcat_user --chmod=640 \
     /usr/local/tomcat/lib/postgresql.jar
 
 # Copy schema and deployment files
-COPY --chown=root:root --chmod=644 schema.sql /schema.sql
+COPY --chown=root:root --chmod=644 src/main/resources/schema.sql /schema.sql
 COPY --chown=tomcat_user:tomcat_user --chmod=750 Donationwebapp.war /usr/local/tomcat/webapps/ROOT.war
 
 # Create database initialization script with appropriate permissions
